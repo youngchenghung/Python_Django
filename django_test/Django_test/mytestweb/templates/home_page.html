@@ -1,0 +1,32 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wellcome to Django Home page</title>
+</head>
+<body>
+    <div class = "nav">
+        <a href = "/">Home</a>
+        <a href = "/hello">Hello_Django</a>
+        <a href = "/dict_http">dict_http</a>
+        <a href = "/dict_json">dict_json</a>
+        <a href = "/admin">Admin</a>
+    </div>
+    <img src = "/static/img/image_0.jpg" alt = "image">
+    <ul>
+        <li>This is the home page of the Django test project</li>
+        <li>123</li>
+        <li>一二三</li>
+    </ul>
+    <ul>
+        {%for article in article_list%}
+            <li>
+                {{article.title}}
+                <ul>
+                    <li>{{article.author}}</li>
+                    <li>{{article.date}}</li>
+                </ul>
+            </li>
+            {%endfor%}
+    </ul>
+</body>
+</html>
