@@ -5,10 +5,11 @@ Created on Tue Apr 30 09:14:14 2024
 @author: USER
 """
 
-
+#%%
 import requests
 import bs4
 import pandas as pd
+import re
 
 
 def search_data():
@@ -16,7 +17,7 @@ def search_data():
     sub_url = '/bbs/Gossiping/index.html'
     my_headers = {'cookie': 'over18=1'}
 
-    data = {"title":[], "pop":[], "author":[], "date":[]}
+    data = {"category":[], "title":[], "pop":[], "author":[], "date":[]}
     while True:
         full_url = base_url + sub_url
         response_url = requests.get(full_url, headers = my_headers)
@@ -25,26 +26,35 @@ def search_data():
 
 
         for article in ppt_articles:
-            title = article.find('div', class_='title').text.strip()
+            full_title = article.find('div', class_='title').text.strip('')
+
+            title = full_title.replace('[問卦]', '').replace('[新聞]', '').replace('[爆卦]', '').strip()
+
+            match = re.search(r'\[.*?\]', full_title)
+            if match:
+                category = match.group(0)
             
-            if '[公告]' in title or '[協尋]' in title:
+            if '[公告]' in full_title or '[協尋]' in full_title:
                 continue
+
             pop = article.find('div', class_='nrec').text.strip()
             
             author = article.find('div', class_='author').text.strip()
             
             date_str = article.find('div', class_='date').text.strip()
-            month, day = date_str.split('/')
-            date = int(str(int(month)) + str(int(day)))
+            month, day  = date_str.split('/')
+            date = int(str(int(month)) + str(int(day[0])) + str(int(day[1])))
+            # print(date)
             
+            data["category"].append(category)
             data["title"].append(title)
             data["pop"].append(pop)
             data["author"].append(author)
             data["date"].append(date_str)
             pandas_dataframe = pd.DataFrame(data)
-            #print(pandas_dataframe)
+            print(pandas_dataframe)
         
-        pandas_dataframe.to_csv(r'C:/Users/USER/Documents/file.csv', 
+        pandas_dataframe.to_csv(r'/Users/leo/Python_Django/django_test/Django_test/PTT_Gossiping_data.csv', 
                                 encoding='utf-8', 
                                 index=False)
 
@@ -53,10 +63,11 @@ def search_data():
         second_article_date = find_article[1]
         date_str = second_article_date.find('div', class_='date').text.strip()
         article_month, article_day = date_str.split('/')
-        count_date = int(str(int(article_month)) + str(int(article_day)))
+        count_date = int(str(int(article_month)) + str(int(article_day[0])) + str(int(article_day[1])))
         #print(count_date)
         
-        if count_date < 429:
+        if count_date < 501:
+            print(count_date)
             print("========DONE======")
             return
 
@@ -72,35 +83,95 @@ if __name__ == '__main__':
     search_data()
     
 #%%
+import pandas as pd
 
-df = pd.read_csv('C:/Users/USER/Documents/file.csv')
-word_1 = df['title'][0]
-word_2 = df['title'][0]
-word_3 = word_1 + word_2
-#print(word_3)
-
-
-words = [i for i in word_3]
-dict_words = {i:word_3.count(i) for i in word_3}
-print(dict_words)
-
+df = pd.read_csv('/Users/leo/Python_Django/django_test/Django_test/PTT_Gossiping_data.csv')
+select = df[['title','pop']]
+print(select.sort_values(by='pop', ascending=False))
 #%%
-df = pd.read_csv('C:/Users/USER/Documents/file.csv')
-words = df['title']
-#print(words)
+
+# 讀取爬蟲資料
+df = pd.read_csv('/Users/leo/Python_Django/django_test/Django_test/PTT_Gossiping_data.csv')
 x = []
-for i in words:
-    for z in i:
-        x.append(z)
+# for index, row in df.iterrows():
+#     title = row['title']
+#     pop = row['pop']
+#     author = row['author']
+#     date = row['date']
+
+#     print(f'title: {title}, pop: {pop}, author: {author}, date: {date}')
+
+#     for z in i:
+#         x.append(z)
     
-#print(x)
+# print(x)
 
-x = [i for i in x]
-dict_words = {i:x.count(i) for i in x}
-print(dict_words)
+# 迴圈取出title欄位中的資料，並存入 x list中
+for i in df['title']:
+    x.append(i)
+# print(x)
 
-aaa = pd.DataFrame(dict_words.items(), columns=['Word', 'Pop', 'Authour', 'Date'])
-print(aaaa)
-sort = aaa.sort_values(by='Pop', ascending=False)
-print(sort.head(50))
+# 將 x list中的資料寫入檔案
+with (open('/Users/leo/Python_Django/django_test/Django_test/PTT_title_list.txt', 'w', encoding='utf-8')) as f:
+    for i in x:
+        f.write(i + '\n')
 
+    # for z in i:
+    #     x.append(z)
+# print(x)
+
+
+# x = [i for i in x]
+# dict_words = {i:x.count(i) for i in x}
+# print(dict_words)
+
+# aaa = pd.DataFrame(dict_words.items(), columns=['title', 'Pop'])
+# print(aaa)
+# sort = aaa.sort_values(by='Pop', ascending=False)
+# print(sort.head(50))
+# %%
+
+import jieba
+import jieba.analyse
+from collections import Counter
+
+# 讀取 title 資料檔案 title_list.txt
+with (open('/Users/leo/Python_Django/django_test/Django_test/PTT_title_list.txt', 'r', encoding='utf-8')) as f:
+    data = f.read()
+    print(data)
+
+# 讀取停用字檔案 stopwords.txt
+stop_words_file = '/Users/leo/Python_Django/django_test/Django_test/stopwords.txt'
+
+# 停用字轉串列
+stop_words_list = []
+with (open(stop_words_file, 'r', encoding='utf-8')) as f:
+    for line in f:
+        stop_words_list.append(line.replace('\n',''))
+# print(stop_words_list)
+
+# 將 title_list.txt 中有停用字去除
+filter_words = []
+for k in data:
+    if k not in stop_words_list:
+        filter_words.append(k)
+print(filter_words)
+
+words = jieba.cut(data)
+words_list = list(words)
+print(words_list)
+
+kywords = jieba.analyse.extract_tags(data, topK=20)
+print(kywords)
+
+words_count = Counter(words_list)
+print(words_count)
+
+df = pd.DataFrame(list(words_count.items()), columns=['word', 'count'])
+
+df.to_csv('/Users/leo/Python_Django/django_test/Django_test/PTT_words_count.csv', 
+          encoding='utf-8', 
+          index=False)
+
+
+# %%
