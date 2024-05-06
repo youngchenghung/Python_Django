@@ -10,12 +10,16 @@ import requests
 import bs4
 import pandas as pd
 import re
+from fake_useragent import UserAgent
+import time
 
 
 def search_data():
     base_url = 'https://www.ptt.cc'
     sub_url = '/bbs/Gossiping/index.html'
-    my_headers = {'cookie': 'over18=1'}
+    ua = UserAgent()
+    user_agent = ua.random
+    my_headers = {'user-agent':user_agent,'cookie': 'over18=1'}
 
     data = {"category":[], "title":[], "pop":[], "author":[], "date":[]}
     while True:
@@ -23,6 +27,7 @@ def search_data():
         response_url = requests.get(full_url, headers = my_headers)
         soup = bs4.BeautifulSoup(response_url.text, 'html.parser')
         ppt_articles = soup.find_all('div', class_='r-ent')
+        # time.sleep(2)
 
 
         for article in ppt_articles:
@@ -46,30 +51,49 @@ def search_data():
             date = int(str(int(month)) + str(int(day[0])) + str(int(day[1])))
             # print(date)
             
+            
             data["category"].append(category)
             data["title"].append(title)
             data["pop"].append(pop)
             data["author"].append(author)
             data["date"].append(date_str)
             pandas_dataframe = pd.DataFrame(data)
-            print(pandas_dataframe)
-        
-        pandas_dataframe.to_csv(r'/Users/kohakudaitoku/Documents/聯成/Python_Django-main/django_test/Django_test/PTT_Gossiping_data.csv', 
+            # print(pandas_dataframe)
+            indexnum = (list(pandas_dataframe.index))
+            
+
+         
+        print(indexnum[-1])
+        x=100
+        if indexnum[-1] >= int(x):
+            print(x)
+            pandas_dataframe.to_csv(r"C:/Users/USER/Desktop/PTT_Gossiping_data.csv", 
                                 encoding='utf-8', 
                                 index=False)
+            print("done")
+            x =+ 100
+            time.sleep(5)
+            
+            
+            
+            
+        # pandas_dataframe.to_csv(r'C:\Users\USER\PTT_Gossiping_data.csv', 
+        #                         encoding='utf-8', 
+        #                         index=False)
 
             
-        find_article = soup.find_all('div', class_='r-ent')
-        second_article_date = find_article[1]
-        date_str = second_article_date.find('div', class_='date').text.strip()
-        article_month, article_day = date_str.split('/')
-        count_date = int(str(int(article_month)) + str(int(article_day[0])) + str(int(article_day[1])))
+            find_article = soup.find_all('div', class_='r-ent')
+            second_article_date = find_article[1]
+            date_str = second_article_date.find('div', class_='date').text.strip()
+            article_month, article_day = date_str.split('/')
+            count_date = int(str(int(article_month)) + str(int(article_day[0])) + str(int(article_day[1])))
         #print(count_date)
         
-        if count_date < 501:
-            print(count_date)
-            print("========DONE======")
-            return
+
+            if count_date < 505:
+                print(count_date)
+                print("========DONE======")
+                return
 
 
         # Find the link to the previous page
