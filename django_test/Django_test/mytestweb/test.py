@@ -15,8 +15,9 @@ my_headers = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKi
 
 # 迴圈重複抓取PPT文章
 data = {"category":[], "title":[], "pop":[], "author":[], "date":[]}
-try:
-    while True:
+
+while True:
+    try:
         full_url = base_url + sub_url
         response_url = requests.get(full_url, headers = my_headers)
         soup = bs4.BeautifulSoup(response_url.text, 'html.parser')
@@ -59,7 +60,7 @@ try:
             data["date"].append(date_str)
             pandas_dataframe = pd.DataFrame(data)
             # print(pandas_dataframe)
-            print("Date: ",date, "Index: ", len(pandas_dataframe))
+            print("Date: ",date, "Index: ", len(pandas_dataframe), "URL: ", full_url)
                 
     
             # 尋找tag 'a'，並找到上一頁的網址
@@ -69,25 +70,25 @@ try:
             else:
                 sub_url = prev_link['href']
     
-            # 判斷日期是101時則結束迴圈
-            if date == 506:
-                print(f'Break === date is {date}')
-                break
+        # 判斷日期是101時則結束迴圈
+        if date == 101:
+            print(f'Break === date is {date}')
+            break
 
 
 
-        pandas_dataframe.to_csv(r'C:/Users/USER/Desktop/PTT_Gossiping_data.csv', 
+        pandas_dataframe.to_csv(r'django_test/Django_test/mytestweb/PTT_Gossiping_data.csv', 
                                         encoding='utf-8', 
                                         index=False)
         print("========Write======")
         print(sub_url)
         
     
-# 異常發生回傳full_url並在嘗試執行迴圈
-except Exception as e:
-    print("while True error: ",e)
-    print(f"Current sub_url: {sub_url}")
-    full_url = base_url + sub_url
+    # 異常發生回傳full_url並在嘗試執行迴圈
+    except Exception as e:
+        print("while True error: ",e)
+        print(f"Current sub_url: {sub_url}")
+        full_url = base_url + sub_url
     
     
         # pandas_dataframe.to_csv(r'C:\Users\USER\PTT_Gossiping_data.csv', 
