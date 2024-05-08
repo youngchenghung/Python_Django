@@ -59,7 +59,8 @@ while True:
             data["author"].append(author)
             data["date"].append(date_str)
             pandas_dataframe = pd.DataFrame(data)
-            # print(pandas_dataframe)
+            print(pandas_dataframe)
+            print(data)
             print("Date: ",date, "Index: ", len(pandas_dataframe), "URL: ", full_url)
                 
     
@@ -77,7 +78,7 @@ while True:
 
 
 
-        pandas_dataframe.to_csv(r'django_test/Django_test/mytestweb/PTT_Gossiping_data.csv', 
+        pandas_dataframe.to_csv(r'django_test/Django_test/mytestweb/PTT_Gossiping_data_1.csv)', 
                                         encoding='utf-8', 
                                         index=False)
         print("========Write======")
@@ -89,6 +90,7 @@ while True:
         print("while True error: ",e)
         print(f"Current sub_url: {sub_url}")
         full_url = base_url + sub_url
+        
     
     
         # pandas_dataframe.to_csv(r'C:\Users\USER\PTT_Gossiping_data.csv', 

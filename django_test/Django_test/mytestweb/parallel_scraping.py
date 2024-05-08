@@ -132,6 +132,8 @@ if __name__ == '__main__':
 # %%
 import requests
 from bs4 import BeautifulSoup
+import re
+import pandas as pd
 import concurrent.futures
 import time  # for simulated delay (optional)
 
@@ -146,6 +148,7 @@ my_headers = {
 
 
 def fetch_ptt_titles(url):
+    # time.sleep(1)
     """Fetches PTT titles from a given URL.
 
     Args:
@@ -164,7 +167,7 @@ def fetch_ptt_titles(url):
 
         # Extract titles using appropriate selectors based on PTT's HTML structure
 
-        data = {"category":[], "title":[], "pop":[], "author":[], "date":[], "index url":[]}
+        data = []
         articles = soup.find_all('div', class_='r-ent')
         for article in articles:
             htmal_tag = article.find('div', class_='title').text.strip('')
@@ -176,6 +179,8 @@ def fetch_ptt_titles(url):
             match = re.search(r'\[.*?\]', htmal_tag)
             if match:
                 category = match.group(0)
+            else:
+                category = 'None'
             
             # 過濾公告或協尋文章
             if '[公告]' in htmal_tag or '[協尋]' in htmal_tag:
@@ -200,62 +205,68 @@ def fetch_ptt_titles(url):
             current_index_num = int(match.group(1)) + 1
 
             # 資料回填到data字典,並轉pandas df格式
-            data["category"].append(category)
-            data["title"].append(title)
-            data["pop"].append(pop)
-            data["author"].append(author)
-            data["date"].append(date_str)
-            data["index url"].append(current_index_num)
-        print(data)
+            data.append({'category':category, 
+                         'title':title, 
+                         'pop':pop, 
+                         'author':author, 
+                         'date':date, 
+                         'current_index_num':current_index_num})
             
-
+        # print(data)
+            
+        # print(pandas_dataframe)
         return data
     except requests.exceptions.RequestException as e:
         print(f"Error fetching {url}: {e}")
-        return []
 
 
 def main():
-    """Main function to orchestrate parallel title fetching and writing to a text file."""
+    try:
+        """Main function to orchestrate parallel title fetching and writing to a text file."""
 
-    response_url = requests.get(base_url, headers=my_headers)
-    soup = BeautifulSoup(response_url.text, 'html.parser')
+        response_url = requests.get(base_url, headers=my_headers)
+        soup = BeautifulSoup(response_url.text, 'html.parser')
 
-    # Find the previous page link (logic might need adjustment based on PTT's HTML structure)
-    prev_link = soup.find('a', string='‹ 上頁')
-    if prev_link:
-        prev_link_url = prev_link['href']
-        match = re.search(r'index(\d+)', prev_link_url)
-        current_index_num = int(match.group(1)) + 1
-    else:
-        # Handle cases where there's no previous page link (e.g., first page)
-        current_index_num = 1
+        # Find the previous page link (logic might need adjustment based on PTT's HTML structure)
+        prev_link = soup.find('a', string='‹ 上頁')
+        if prev_link:
+            prev_link_url = prev_link['href']
+            match = re.search(r'index(\d+)', prev_link_url)
+            current_index_num = int(match.group(1)) + 1
+        else:
+            # Handle cases where there's no previous page link (e.g., first page)
+            current_index_num = 1
 
-    # Generate a range of URLs for the desired number of pages
-    num_pages_to_fetch = 10  # Adjust as needed
-    range10_index_num = range(current_index_num, current_index_num - num_pages_to_fetch, -1)
+        # Generate a range of URLs for the desired number of pages
+        num_pages_to_fetch = 100000  # Adjust as needed
+        range10_index_num = range(current_index_num, current_index_num - num_pages_to_fetch, -1)
 
-    urls = ["https://www.ptt.cc/bbs/Gossiping/index{}.html".format(i) for i in range10_index_num]
+        urls = ["https://www.ptt.cc/bbs/Gossiping/index{}.html".format(i) for i in range10_index_num]
 
-    # Use a thread pool executor for parallel fetching
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-        future_to_url = {executor.submit(fetch_ptt_titles, url): url for url in urls}
-        all_data = []  # Store all fetched data
-        for future in concurrent.futures.as_completed(future_to_url):
-            url = future_to_url[future]
-            try:
+
+        # Use a thread pool executor for parallel fetching
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+            future_to_url = {executor.submit(fetch_ptt_titles, url): url for url in urls}
+            # print(future_to_url)
+
+            merged_data = []  # Create an empty list to store all data
+
+            for future in concurrent.futures.as_completed(future_to_url):
+                url = future_to_url[future]
                 data = future.result()
-                all_data.extend(data)  # Accumulate data from each page
-            except Exception as e:
-                print(f"Error fetching {url}: {e}")
+                # print(data)
 
-    # Combine all fetched data into a single DataFrame
-    df = pd.DataFrame(data)
+                merged_data.extend(data)  # Add data to the merged_data list
 
-    # Write DataFrame to CSV file (replace 'ptt_data.csv' with your desired filename)
-    df.to_csv('ptt_data.csv', index=False)
+                # Combine all fetched data into a single DataFrame
+                df = pd.DataFrame(merged_data)
+
+                # Write DataFrame to CSV file (replace 'ptt_data.csv' with your desired filename)
+                df.to_csv('ptt_data_1.csv',index=False)
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching {url}: {e}")
 
 
 if __name__ == '__main__':
     main()
-# %%
