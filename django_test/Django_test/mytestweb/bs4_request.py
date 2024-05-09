@@ -113,9 +113,11 @@ df = pd.read_csv('/Users/kohakudaitoku/Documents/聯成/Python_Django-main/djang
 select = df[['title','pop']]
 print(select.sort_values(by='pop', ascending=False))
 #%%
+import pandas as pd
+
 
 # 讀取爬蟲資料
-df = pd.read_csv('/Users/kohakudaitoku/Documents/聯成/Python_Django-main/django_test/Django_test/PTT_Gossiping_data.csv')
+df = pd.read_csv('/Users/kohakudaitoku/Documents/聯成/Python_Django/django_test/Django_test/mytestweb/PTT_Gossiping_data.csv')
 x = []
 # for index, row in df.iterrows():
 #     title = row['title']
@@ -136,7 +138,7 @@ for i in df['title']:
 print(x)
 
 # 將 x list中的資料寫入檔案
-with (open('/Users/kohakudaitoku/Documents/聯成/Python_Django-main/django_test/Django_test/PTT_title_list.txt', 'w', encoding='utf-8')) as f:
+with (open('/Users/kohakudaitoku/Documents/聯成/Python_Django/django_test/Django_test/mytestweb/PTT_title_list.txt', 'w', encoding='utf-8')) as f:
     for i in x:
         f.write(i + '\n')
 
