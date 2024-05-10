@@ -5,142 +5,151 @@ Created on Thu May  9 11:27:07 2024
 @author: USER
 """
 
-import pandas as pd
-import matplotlib.pyplot as plt
-    
-df = pd.read_csv('/Users/USER/Downloads/Python_Django-main/django_test/Django_test/mytestweb/PTT_Gossiping_data.csv')
-# print(df)
-
-category_counts =  df.groupby(["category","date"]).size().reset_index(name='category count').sort_values(by='category count', ascending=False)
-category_counts_top10 = category_counts.head(10)
-# print(category_counts_top10)
-
-# 前10的分類排行
-category =  df.groupby(["category"]).size().reset_index(name='category count').sort_values(by='category count', ascending=False)
-category_top10 = category.head(10)
-print(category_top10)
-
-with (open('/Users/USER/Downloads/Python_Django-main/django_test/Django_test/mytestweb/Category_top10.csv', 'w', encoding='utf-8')) as f:
-        f.write(category_top10)
-
-
-plt.rcParams['font.sans-serif'] = ['Microsoft JhengHei'] # 修改中文字體
-plt.rcParams['axes.unicode_minus'] = False # 顯示負號
-
-category = ['[問卦]','[新聞]','[爆掛]','[地震]','[問題]']
-count = [1, 2, 3, 4, 5]
-
-plt.figure(figsize=(5,3))
-
-plt.subplot(111)
-plt.bar(category, count)
-plt.show
-
-#%%
-import pandas as pd
-import matplotlib.pyplot as plt
-
-    
-df = pd.read_csv('/Users/USER/Downloads/Python_Django-main/django_test/Django_test/mytestweb/PTT_Gossiping_data.csv')
-
-df_dropna = df.dropna()
-print(df_dropna)
-df_isnull = df_dropna['pop'].isnull()
-print(df_isnull)
-
-
-chart_df = df_dropna[["category","pop","date"]]
-print(chart_df.info())
-
-chart_df['pop'] = chart_df['pop'].replace('爆', 100)
-chart_df['pop'] = chart_df['pop'].replace('XX', -100)
-chart_df['pop'] = chart_df['pop'].replace(r'X(\d+)', r'-\1', regex=True)
-chart_df['date'] = pd.to_datetime(df['date'], format='%m/%d')
-print(chart_df)
-int_pop = chart_df['pop'].astype(int)
-
-
-
-print(int_pop.info())
-print(int_pop)
-chart_df.to_csv('/Users/USER/Downloads/Python_Django-main/django_test/Django_test/mytestweb/int_pop.csv', index=False)
-
-
-df = pd.read_csv('/Users/USER/Downloads/Python_Django-main/django_test/Django_test/mytestweb/int_pop.csv')
-print(df.info())
-chart = chart_df.plot(xlabel='pop', ylabel='date', title='123', legend=True)
-plt.grid()
-plt.show()
-
-#%%
-import pandas as pd
-import matplotlib.pyplot as plt
-
-data = pd.read_csv('/Users/USER/Downloads/Python_Django-main/django_test/Django_test/mytestweb/PTT_Gossiping_data.csv')
-print(data['pop'])
-
-# 創建一個範例DataFrame
-# data = {'category': ['[問卦]', '[新聞]', '[問卦]', '[問卦]', '[新聞]'],
-#         'pop': ['3', '10', '3', '3', '5'],
-#         'date': ['5/06', '5/07', '5/08', '5/09', '5/10']}
-
-
-df = data.dropna()
-df['pop'] = df['pop'].fillna(0)
-print(df['pop'])
-
-# 將'pop'欄位轉換為數值型態
-df['pop'] = df['pop'].replace('爆', 100)
-df['pop'] = df['pop'].replace('XX', -100)
-df['pop'] = df['pop'].replace(r'X(\d+)', r'-\1', regex=True)
-df['pop'] = df['pop'].astype(int)
-
-# 將日期字符串轉換為日期格式
-df['date'] = pd.to_datetime(df['date'] + '/2024', format='%m/%d/%Y')
-
-# 根據日期對'pop'求和
-# df = df.groupby('date')['pop'].sum().reset_index()
-
-print(df['pop'])
-
-# 繪製圖表
-plt.plot(df['date'], df['pop'])
-plt.xlabel('Date')
-plt.ylabel('Popularity')
-plt.title('Popularity Over Time')
-plt.xticks(rotation=45)
-
-plt.show()
-
 #%%
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-data = pd.read_csv('/Users/USER/Downloads/Python_Django-main/django_test/Django_test/mytestweb/PTT_Gossiping_data.csv')
-# print(data['pop'])
+# 讀取raw data
+df = pd.read_csv('/Users/kohakudaitoku/Documents/聯成/Python_Django/django_test/Django_test/mytestweb/PTT_Gossiping_data.csv')
+print(df.info())
 
+# 將'date'欄位拆分成'month'和'day'兩個欄位
+df[['month', 'day']] = df['date'].str.split('/', expand=True)
+# 刪除原始的'date'欄位
+df = df.drop(columns=['date'])
+# 將日期字符串轉換為數值型態
+df['month'] = pd.to_numeric(df['month'])
+df['day'] = pd.to_numeric(df['day'])
+# print(df.info())
+# print(df[['month', 'day']])
 
-df = data.dropna()
+# 'pop'欄位的所有NaN值替換為0
 df['pop'] = df['pop'].fillna(0)
-# print(df['pop'])
-
-# 將'pop'欄位轉換為數值型態
+# 'pop'欄位轉換為數值型態
 df['pop'] = df['pop'].replace('爆', 100)
 df['pop'] = df['pop'].replace('XX', -100)
 df['pop'] = df['pop'].replace(r'X(\d+)', r'-\1', regex=True)
 df['pop'] = df['pop'].astype(int)
+# print(df.info())
 
-# 將日期字符串轉換為日期格式
-df['date'] = pd.to_datetime(df['date'] + '/2024', format='%m/%d/%Y')
+# 月份資料處理
+month_1_data = df[df['month'] == 1]
+month_2_data = df[df['month'] == 2]
+month_3_data = df[df['month'] == 3]
+month_4_data = df[df['month'] == 4]
+month_5_data = df[df['month'] == 5]
 
-# 繪製scatter圖表
-plt.scatter(df['date'], df['pop'], marker='o')
-plt.xlabel('Date')
-plt.ylabel('Popularity')
-plt.title('Popularity Over Time')
-plt.xticks(rotation=45)
-plt.grid(True)
-plt.tight_layout()
+# 個月文章數
+num_rows_month_1 = len(month_1_data)
+print(num_rows_month_1)
+num_rows_month_2 = len(month_2_data)
+print(num_rows_month_2)
+num_rows_month_3 = len(month_3_data)
+print(num_rows_month_3)
+num_rows_month_4 = len(month_4_data)
+print(num_rows_month_4)
+num_rows_month_5 = len(month_5_data)
+print(num_rows_month_5)
+
+# 文章分類資料
+category_news_month_1_data = len(month_1_data[df['category'] == '[新聞]'])
+category_gossip_month_1_data = len(month_1_data[df['category'] == '[爆卦]'])
+category_ask_month_1_data = len(month_1_data[df['category'] == '[問卦]'])
+
+category_news_month_2_data = len(month_2_data[df['category'] == '[新聞]'])
+category_gossip_month_2_data = len(month_2_data[df['category'] == '[爆卦]'])
+category_ask_month_2_data = len(month_2_data[df['category'] == '[問卦]'])
+
+
+
+#%%
+import matplotlib.pyplot as plt
+
+
+
+month = [1, 2, 3, 4, 5]
+article = [num_rows_month_1, num_rows_month_2, num_rows_month_3, num_rows_month_4, num_rows_month_5]
+
+plt.xlim(0, 6) 
+plt.plot(month, article, marker = 'o', linestyle = '--')
+
+plt.xlabel('Month', color = 'red')
+plt.ylabel('Article', color = 'red')
+plt.title('PTT article counts', color = 'red')
 plt.show()
+
+#%%
+
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+
+category_type = ['新聞', '爆卦', '問卦']
+category_count = [category_news_month_1_data, category_gossip_month_1_data, category_ask_month_1_data]
+
+fig = plt.figure(figsize=(5,3))
+
+plt.xlim(-1,3)
+plt.plot(category_type, category_count, marker = 'o', linestyle = '--')
+
+plt.xlabel('文章類別', color = 'red')
+plt.ylabel('文章數量（篇）', color = 'red')
+plt.tick_params(axis='x', width=5, rotation=45)
+plt.title('PTT八卦版 一月文章類別分布', color = 'red')
+
+plt.show()
+
+#%%
+
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+
+category_type = ['新聞', '爆卦', '問卦']
+category_count = [category_news_month_2_data, category_gossip_month_2_data, category_ask_month_2_data]
+
+fig = plt.figure(figsize=(5,3))
+
+plt.xlim(-1,3)
+plt.plot(category_type, category_count, marker = 'o', linestyle = '--')
+
+plt.xlabel('文章類別', color = 'red')
+plt.ylabel('文章數量（篇）', color = 'red')
+plt.tick_params(axis='x', width=5, rotation=45)
+plt.title('PTT八卦版 二月文章類別分布', color = 'red')
+
+plt.show()
+
+#%%
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+"""
+ 1.參數設定
+"""
+xmin, xmax, A, N = 0, 4*np.pi, 4, 100
+x = np.linspace(xmin, xmax, N)
+y = A*np.sin(x)
+
+"""
+ 2.繪圖
+"""
+fig = plt.figure(figsize=(7, 6), dpi=100)
+ax = fig.gca()
+line, = ax.plot(x, y, color='blue', linestyle='-', linewidth=3)
+dot, = ax.plot([], [], color='red', marker='o', markersize=10, markeredgecolor='black', linestyle='')
+ax.set_xlabel('x', fontsize=14)
+ax.set_ylabel('y', fontsize=14)
+
+def update(i):
+    dot.set_data(x[i], y[i])
+    return dot,
+
+def init():
+    dot.set_data(x[0], y[0])
+    return dot,
+
+ani = animation.FuncAnimation(fig=fig, func=update, frames=N, init_func=init, interval=1000/N, blit=True, repeat=True)
+plt.show()
+ani.save('MovingPointMatplotlib.gif', writer='imagemagick', fps=1/0.04)
+# %%
