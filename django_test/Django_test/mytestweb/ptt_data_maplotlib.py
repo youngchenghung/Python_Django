@@ -41,6 +41,36 @@ month_3_data = df[df['month'] == 3]
 month_4_data = df[df['month'] == 4]
 month_5_data = df[df['month'] == 5]
 
+# 一月1號的文章
+month_1_day_num = 2
+month_1_1_data = month_1_data[month_1_data['day'] == month_1_day_num]
+print(month_1_1_data)
+category_news_month_1_1_data = len(month_1_1_data[month_1_1_data['category'] == '[新聞]'])
+print(category_news_month_1_1_data)
+
+
+# 迴圈month_1_data資料中day欄位1到31份文章中類別篇數
+total_1_category_count = []
+month_1_day_num = 32
+for i in range (1,month_1_day_num):
+    # print(i)
+    day_data = month_1_data[month_1_data['day'] == i]
+    
+    category_news_month_1_1_data = len(day_data[day_data['category'] == '[新聞]'])
+    add_news_result =+ category_news_month_1_1_data
+    
+    category_gossip_month_1_1_data = len(day_data[day_data['category'] == '[爆卦]'])
+    add_gossip_result =+ category_gossip_month_1_1_data
+
+    category_ask_month_1_1_data = len(day_data[day_data['category'] == '[問卦]'])
+    add_ask_result =+ category_ask_month_1_1_data
+
+    total_1_category_count.append([add_news_result, add_gossip_result, add_ask_result])
+
+print(total_1_category_count)
+    
+
+
 # 個月文章數
 num_rows_month_1 = len(month_1_data)
 print(num_rows_month_1)
@@ -57,10 +87,23 @@ print(num_rows_month_5)
 category_news_month_1_data = len(month_1_data[df['category'] == '[新聞]'])
 category_gossip_month_1_data = len(month_1_data[df['category'] == '[爆卦]'])
 category_ask_month_1_data = len(month_1_data[df['category'] == '[問卦]'])
+print(category_news_month_1_data)
 
 category_news_month_2_data = len(month_2_data[df['category'] == '[新聞]'])
 category_gossip_month_2_data = len(month_2_data[df['category'] == '[爆卦]'])
 category_ask_month_2_data = len(month_2_data[df['category'] == '[問卦]'])
+
+category_news_month_3_data = len(month_3_data[df['category'] == '[新聞]'])
+category_gossip_month_3_data = len(month_3_data[df['category'] == '[爆卦]'])
+category_ask_month_3_data = len(month_3_data[df['category'] == '[問卦]'])
+
+category_news_month_4_data = len(month_4_data[df['category'] == '[新聞]'])
+category_gossip_month_4_data = len(month_4_data[df['category'] == '[爆卦]'])
+category_ask_month_4_data = len(month_4_data[df['category'] == '[問卦]'])
+
+category_news_month_5_data = len(month_5_data[df['category'] == '[新聞]'])
+category_gossip_month_5_data = len(month_5_data[df['category'] == '[爆卦]'])
+category_ask_month_5_data = len(month_5_data[df['category'] == '[問卦]'])
 
 
 
@@ -101,55 +144,93 @@ plt.show()
 
 #%%
 
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+#### 月份動態圖 ####
 
-category_type = ['新聞', '爆卦', '問卦']
-category_count = [category_news_month_2_data, category_gossip_month_2_data, category_ask_month_2_data]
-
-fig = plt.figure(figsize=(5,3))
-
-plt.xlim(-1,3)
-plt.plot(category_type, category_count, marker = 'o', linestyle = '--')
-
-plt.xlabel('文章類別', color = 'red')
-plt.ylabel('文章數量（篇）', color = 'red')
-plt.tick_params(axis='x', width=5, rotation=45)
-plt.title('PTT八卦版 二月文章類別分布', color = 'red')
-
-plt.show()
-
-#%%
-
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-"""
- 1.參數設定
-"""
-xmin, xmax, A, N = 0, 4*np.pi, 4, 100
-x = np.linspace(xmin, xmax, N)
-y = A*np.sin(x)
+category_type = ['新聞', '爆卦', '問卦']
+category_count_1 = [category_news_month_1_data, category_gossip_month_1_data, category_ask_month_1_data]
+category_count_2 = [category_news_month_2_data, category_gossip_month_2_data, category_ask_month_2_data]
+category_count_3 = [category_news_month_3_data, category_gossip_month_3_data, category_ask_month_3_data]
+category_count_4 = [category_news_month_4_data, category_gossip_month_4_data, category_ask_month_4_data]
+category_count_5 = [category_news_month_5_data, category_gossip_month_5_data, category_ask_month_5_data]
+category_count_list = [category_count_1, category_count_2, category_count_3, category_count_4, category_count_5]
+# print(category_count_list)
 
-"""
- 2.繪圖
-"""
-fig = plt.figure(figsize=(7, 6), dpi=100)
-ax = fig.gca()
-line, = ax.plot(x, y, color='blue', linestyle='-', linewidth=3)
-dot, = ax.plot([], [], color='red', marker='o', markersize=10, markeredgecolor='black', linestyle='')
-ax.set_xlabel('x', fontsize=14)
-ax.set_ylabel('y', fontsize=14)
+# 創建畫布(寬8, 高5)
+fig, ax = plt.subplots(figsize=(8,5))
 
-def update(i):
-    dot.set_data(x[i], y[i])
-    return dot,
 
-def init():
-    dot.set_data(x[0], y[0])
-    return dot,
+def update(num):
+    
+    ax.clear()
+    
+    ax.bar(category_type, category_count_list[num % len(category_count_list)])
+    ax.set_title('PTT八卦版 一月文章類別分布', color = 'red')
 
-ani = animation.FuncAnimation(fig=fig, func=update, frames=N, init_func=init, interval=1000/N, blit=True, repeat=True)
+    ax.set_xlabel('文章類別', color = 'red')
+    ax.set_ylabel('文章數量（篇）', color = 'red')
+    ax.set_title(f'PTT八卦版 {num+1}月文章類別分布', color = 'red')
+
+    # 設定 x 軸的文字刻度間距為 5 個單位
+    ax.tick_params(axis='x', width=5, rotation=0)
+    # 設定 x 軸的刻度間距為 1
+    ax.set_xlim(-1,3)
+    # 設定 y 軸的範圍
+    ax.set_ylim(0, 40000)
+    # 設定 y 軸的刻度間距為 5000
+    ax.set_yticks(np.arange(0, 40000, 5000))
+
+ani = animation.FuncAnimation(fig, update, frames=range(5), repeat=True)
 plt.show()
-ani.save('MovingPointMatplotlib.gif', writer='imagemagick', fps=1/0.04)
-# %%
+
+ani.save('movechart.gif', writer='imagemagick', fps=1/1)
+
+
+
+#%%
+
+#### 日份動態圖 ####
+
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+category_type = ['新聞', '爆卦', '問卦']
+
+
+
+
+# 創建畫布(寬8, 高5)
+fig, ax = plt.subplots(figsize=(8,5))
+
+
+def update(num):
+    
+    ax.clear()
+    
+    ax.bar(category_type, total_1_category_count[num % len(total_1_category_count)])
+    ax.set_title('PTT八卦版 一月文章類別分布', color = 'red')
+
+    ax.set_xlabel('文章類別', color = 'red')
+    ax.set_ylabel('文章數量（篇）', color = 'red')
+    ax.set_title(f'PTT八卦版 一月 / {num+1}日 文章類別分布', color = 'red')
+
+    # 設定 x 軸的文字刻度間距為 5 個單位
+    ax.tick_params(axis='x', width=5, rotation=0)
+    # 設定 x 軸的刻度間距為 1
+    ax.set_xlim(-1,3)
+    # 設定 y 軸的範圍
+    ax.set_ylim(0, 2000)
+    # 設定 y 軸的刻度間距為 5000
+    ax.set_yticks(np.arange(0, 2000, 200))
+
+ani = animation.FuncAnimation(fig, update, frames=range(31), repeat=True)
+plt.show()
+
+ani.save('movechart_month_1_category.gif', writer='imagemagick', fps=1/1)
+
+#%%
+
+
+
