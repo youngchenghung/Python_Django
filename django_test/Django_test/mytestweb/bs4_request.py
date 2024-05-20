@@ -114,10 +114,13 @@ select = df[['title','pop']]
 print(select.sort_values(by='pop', ascending=False))
 #%%
 import pandas as pd
+import os
+
+# 讀取raw data
+current_path = os.getcwd()
+df = pd.read_csv(os.path.join(current_path, 'PTT_Gossiping_data.csv'))
 
 
-# 讀取爬蟲資料
-df = pd.read_csv('/Users/kohakudaitoku/Documents/聯成/Python_Django/django_test/Django_test/mytestweb/PTT_Gossiping_data.csv')
 x = []
 # for index, row in df.iterrows():
 #     title = row['title']
@@ -163,14 +166,22 @@ import jieba
 import jieba.analyse
 from collections import Counter
 import pandas as pd
+import os
+
+# 讀取raw data
+current_path = os.getcwd()
+df = pd.read_csv(os.path.join(current_path, 'PTT_Gossiping_data.csv'))
 
 # 讀取 title 資料檔案 title_list.txt
-with (open('/Users/kohakudaitoku/Documents/聯成/Python_Django-main/django_test/Django_test/PTT_title_list.txt', 'r', encoding='utf-8')) as f:
+with (open('/Users/leo/Python_Django-2/django_test/Django_test/mytestweb/PTT_title_list.txt', 'r', encoding='utf-8')) as f:
     data = f.read()
     # print(data)
 
+# 官方預設詞庫
+jieba.set_dictionary('dict.txt.big')
+
 # 讀取停用字檔案 stopwords.txt
-stop_words_file = '/Users/kohakudaitoku/Documents/聯成/Python_Django-main/django_test/Django_test/stop_words.txt'
+stop_words_file = '/Users/leo/Python_Django-2/django_test/Django_test/mytestweb/stop_words.txt'
 stop_words_list = []
 for line in open(stop_words_file, 'r', encoding='utf-8'):
     stop_words_list.append(line.strip('\n'))
@@ -210,13 +221,13 @@ keywords_counts = Counter(keywords)
 # 將結果存入 DataFrame, 並依照 count 排序
 df = pd.DataFrame(list(keywords_counts.items()), columns=['Word', 'Counts'])
 x = df.sort_values(by='Counts', ascending=False)
-print(x.head(10))
+print(x.head(50))
 
-df.to_csv('/Users/kohakudaitoku/Documents/聯成/Python_Django-main/django_test/Django_test/PTT_words_count.csv', 
+df.to_csv('/Users/leo/Python_Django-2/django_test/Django_test/mytestweb//PTT_words_count.csv', 
           encoding='utf-8', 
           index=False)
 
-with (open('/Users/kohakudaitoku/Documents/聯成/Python_Django-main/django_test/Django_test/PTT_words_count.csv', 'r', encoding='utf-8')) as f:
+with (open('/Users/leo/Python_Django-2/django_test/Django_test/mytestweb/PTT_words_count.csv', 'r', encoding='utf-8')) as f:
     PTT_words_count = pd.read_csv(f)
     print(PTT_words_count)
 
@@ -231,7 +242,8 @@ import jieba.analyse
 from collections import Counter
 import pandas as pd
 
-df = pd.read_csv('/Users/kohakudaitoku/Documents/聯成/Python_Django-main/django_test/Django_test/PTT_Gossiping_data.csv')
+
+df = pd.read_csv('/Users/leo/Python_Django-2/django_test/Django_test/mytestweb/PTT_Gossiping_data.csv')
 print(df)
 
 category_counts =  df.groupby(["category","date"]).size().reset_index(name='category count').sort_values(by='category count', ascending=False)
@@ -261,3 +273,5 @@ print(df[author3_counts])
 
 author4_counts =  df["author"] == "ianlin1216"
 print(df[author4_counts])
+
+# %%

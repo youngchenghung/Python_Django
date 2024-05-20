@@ -10,10 +10,12 @@ Created on Thu May  9 11:27:07 2024
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 # 讀取raw data
-df = pd.read_csv('/Users/kohakudaitoku/Documents/聯成/Python_Django/django_test/Django_test/mytestweb/PTT_Gossiping_data.csv')
-print(df.info())
+current_path = os.getcwd()
+df = pd.read_csv(os.path.join(current_path, 'PTT_Gossiping_data.csv'))
+# print(df.info())
 
 # 將'date'欄位拆分成'month'和'day'兩個欄位
 df[['month', 'day']] = df['date'].str.split('/', expand=True)
@@ -52,18 +54,23 @@ print(category_news_month_1_1_data)
 # 迴圈month_1_data資料中day欄位1到31份文章中類別篇數
 total_1_category_count = []
 month_1_day_num = 32
+add_news_result = 0
+add_gossip_result = 0
+add_ask_result = 0
 for i in range (1,month_1_day_num):
     # print(i)
-    day_data = month_1_data[month_1_data['day'] == i]
     
+    day_data = month_1_data[month_1_data['day'] == i]
+
     category_news_month_1_1_data = len(day_data[day_data['category'] == '[新聞]'])
-    add_news_result =+ category_news_month_1_1_data
+    add_news_result += category_news_month_1_1_data
+    # print(add_news_result)
     
     category_gossip_month_1_1_data = len(day_data[day_data['category'] == '[爆卦]'])
-    add_gossip_result =+ category_gossip_month_1_1_data
+    add_gossip_result += category_gossip_month_1_1_data
 
     category_ask_month_1_1_data = len(day_data[day_data['category'] == '[問卦]'])
-    add_ask_result =+ category_ask_month_1_1_data
+    add_ask_result += category_ask_month_1_1_data
 
     total_1_category_count.append([add_news_result, add_gossip_result, add_ask_result])
 
@@ -87,7 +94,7 @@ print(num_rows_month_5)
 category_news_month_1_data = len(month_1_data[df['category'] == '[新聞]'])
 category_gossip_month_1_data = len(month_1_data[df['category'] == '[爆卦]'])
 category_ask_month_1_data = len(month_1_data[df['category'] == '[問卦]'])
-print(category_news_month_1_data)
+# print(category_news_month_1_data)
 
 category_news_month_2_data = len(month_2_data[df['category'] == '[新聞]'])
 category_gossip_month_2_data = len(month_2_data[df['category'] == '[爆卦]'])
@@ -149,6 +156,7 @@ plt.show()
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+
 category_type = ['新聞', '爆卦', '問卦']
 category_count_1 = [category_news_month_1_data, category_gossip_month_1_data, category_ask_month_1_data]
 category_count_2 = [category_news_month_2_data, category_gossip_month_2_data, category_ask_month_2_data]
@@ -165,13 +173,12 @@ fig, ax = plt.subplots(figsize=(8,5))
 def update(num):
     
     ax.clear()
-    
     ax.bar(category_type, category_count_list[num % len(category_count_list)])
-    ax.set_title('PTT八卦版 一月文章類別分布', color = 'red')
+    ax.set_title('PTT八卦版 2024-1月到5月文章類別分布', color = 'red')
 
     ax.set_xlabel('文章類別', color = 'red')
     ax.set_ylabel('文章數量（篇）', color = 'red')
-    ax.set_title(f'PTT八卦版 {num+1}月文章類別分布', color = 'red')
+    ax.set_title(f'PTT八卦版 2024-{num+1}月文章類別分布', color = 'red')
 
     # 設定 x 軸的文字刻度間距為 5 個單位
     ax.tick_params(axis='x', width=5, rotation=0)
@@ -183,6 +190,7 @@ def update(num):
     ax.set_yticks(np.arange(0, 40000, 5000))
 
 ani = animation.FuncAnimation(fig, update, frames=range(5), repeat=True)
+plt.rcParams["font.family"] = 'Arial Unicode MS'
 plt.show()
 
 ani.save('movechart.gif', writer='imagemagick', fps=1/1)
@@ -210,25 +218,26 @@ def update(num):
     ax.clear()
     
     ax.bar(category_type, total_1_category_count[num % len(total_1_category_count)])
-    ax.set_title('PTT八卦版 一月文章類別分布', color = 'red')
+    ax.set_title('PTT八卦版 1月文章類別分布', color = 'red')
 
     ax.set_xlabel('文章類別', color = 'red')
     ax.set_ylabel('文章數量（篇）', color = 'red')
-    ax.set_title(f'PTT八卦版 一月 / {num+1}日 文章類別分布', color = 'red')
+    ax.set_title(f'PTT八卦版 1月 / {num+1}日 文章類別分布', color = 'red')
 
     # 設定 x 軸的文字刻度間距為 5 個單位
     ax.tick_params(axis='x', width=5, rotation=0)
     # 設定 x 軸的刻度間距為 1
     ax.set_xlim(-1,3)
     # 設定 y 軸的範圍
-    ax.set_ylim(0, 2000)
+    ax.set_ylim(0, 35000)
     # 設定 y 軸的刻度間距為 5000
-    ax.set_yticks(np.arange(0, 2000, 200))
+    ax.set_yticks(np.arange(0, 35000, 5000))
 
 ani = animation.FuncAnimation(fig, update, frames=range(31), repeat=True)
+plt.rcParams["font.family"] = 'Arial Unicode MS'
 plt.show()
 
-ani.save('movechart_month_1_category.gif', writer='imagemagick', fps=1/1)
+ani.save('movechart_month_1_category.gif', writer='imagemagick', fps=1/0.2)
 
 #%%
 
