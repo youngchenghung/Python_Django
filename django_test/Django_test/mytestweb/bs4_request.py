@@ -170,10 +170,11 @@ import os
 
 # 讀取raw data
 current_path = os.getcwd()
+print(current_path)
 df = pd.read_csv(os.path.join(current_path, 'PTT_Gossiping_data.csv'))
 
 # 讀取 title 資料檔案 title_list.txt
-with (open('/Users/leo/Python_Django-2/django_test/Django_test/mytestweb/PTT_title_list.txt', 'r', encoding='utf-8')) as f:
+with (open(current_path+'/PTT_title_list.txt', 'r', encoding='utf-8')) as f:
     data = f.read()
     # print(data)
 
@@ -181,7 +182,7 @@ with (open('/Users/leo/Python_Django-2/django_test/Django_test/mytestweb/PTT_tit
 jieba.set_dictionary('dict.txt.big')
 
 # 讀取停用字檔案 stopwords.txt
-stop_words_file = '/Users/leo/Python_Django-2/django_test/Django_test/mytestweb/stop_words.txt'
+stop_words_file = current_path+'/stop_words.txt'
 stop_words_list = []
 for line in open(stop_words_file, 'r', encoding='utf-8'):
     stop_words_list.append(line.strip('\n'))
@@ -221,15 +222,15 @@ keywords_counts = Counter(keywords)
 # 將結果存入 DataFrame, 並依照 count 排序
 df = pd.DataFrame(list(keywords_counts.items()), columns=['Word', 'Counts'])
 x = df.sort_values(by='Counts', ascending=False)
-print(x.head(50))
+# print(x.head(50))
 
-df.to_csv('/Users/leo/Python_Django-2/django_test/Django_test/mytestweb//PTT_words_count.csv', 
+df.to_csv(current_path+'/PTT_words_count.csv', 
           encoding='utf-8', 
           index=False)
 
-with (open('/Users/leo/Python_Django-2/django_test/Django_test/mytestweb/PTT_words_count.csv', 'r', encoding='utf-8')) as f:
+with (open(current_path+'/PTT_words_count.csv', 'r', encoding='utf-8')) as f:
     PTT_words_count = pd.read_csv(f)
-    print(PTT_words_count)
+    # print(PTT_words_count)
 
 
 # 排序欄位Counts從大到小
@@ -241,9 +242,14 @@ import jieba
 import jieba.analyse
 from collections import Counter
 import pandas as pd
+import os
+
+# 讀取raw data
+current_path = os.getcwd()
+print(current_path)
 
 
-df = pd.read_csv('/Users/leo/Python_Django-2/django_test/Django_test/mytestweb/PTT_Gossiping_data.csv')
+df = pd.read_csv(current_path+'/PTT_Gossiping_data.csv')
 print(df)
 
 category_counts =  df.groupby(["category","date"]).size().reset_index(name='category count').sort_values(by='category count', ascending=False)

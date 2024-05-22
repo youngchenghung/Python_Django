@@ -115,22 +115,6 @@ category_ask_month_5_data = len(month_5_data[df['category'] == '[問卦]'])
 
 
 #%%
-import matplotlib.pyplot as plt
-
-
-
-month = [1, 2, 3, 4, 5]
-article = [num_rows_month_1, num_rows_month_2, num_rows_month_3, num_rows_month_4, num_rows_month_5]
-
-plt.xlim(0, 6) 
-plt.plot(month, article, marker = 'o', linestyle = '--')
-
-plt.xlabel('Month', color = 'red')
-plt.ylabel('Article', color = 'red')
-plt.title('PTT article counts', color = 'red')
-plt.show()
-
-#%%
 
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
 
@@ -241,5 +225,123 @@ ani.save('movechart_month_1_category.gif', writer='imagemagick', fps=1/0.2)
 
 #%%
 
+#### 熱門關鍵字 ####
+
+import pandas as pd
+import os
+import matplotlib.pyplot as plt
+
+current_path = os.getcwd()
+print(current_path)
+
+with (open(current_path+'/PTT_words_count.csv', 'r', encoding='utf-8')) as f:
+    PTT_words_count = pd.read_csv(f)
+    print(list(PTT_words_count['Counts']))
+    
 
 
+
+# 排序欄位Counts從大到小
+sort_counts = PTT_words_count.sort_values(by='Counts', ascending=False)
+print(sort_counts)
+
+list_words = (list(sort_counts['Word'][0:10]))
+list_counts = (list(sort_counts['Counts'][0:10]))
+
+
+# print(labels)
+separeted = [0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]
+plt.pie(list_counts,                           # 數值
+        labels = list_words,                # 標籤
+        autopct = "%1.1f%%",            # 將數值百分比並留到小數點一位
+        explode = separeted,            # 設定分隔的區塊位置
+        pctdistance = 0.6,              # 數字距圓心的距離
+        textprops = {"fontsize" : 12},  # 文字大小
+        shadow=True)                    # 設定陰影
+
+
+plt.axis('equal')                                          # 使圓餅圖比例相等
+plt.title("Top 10 keyword in PTT", {"fontsize" : 18})  # 設定標題及其文字大小
+plt.legend(loc = "best")                                   # 設定圖例及其位置為最佳
+plt.rcParams["font.family"] = 'Arial Unicode MS'
+plt.show()
+# %%
+
+#### 個日文章數 ####
+
+import seaborn as sns
+import pandas as pd
+import os
+
+# 讀取raw data
+current_path = os.getcwd()
+print(current_path)
+
+
+df = pd.read_csv(current_path+'/PTT_Gossiping_data.csv')
+print(df)
+
+df[['month', 'day']] = df['date'].str.split('/', expand=True)
+expand_date = df.drop('date', axis=1)
+print(expand_date)
+
+
+# date_vs_article =  df.groupby(["month", "day"]).size().reset_index(name='article count').sort_values(by='article count', ascending=False)
+date_vs_article =  df.groupby(["month", "day"]).size().reset_index(name='article count')
+# date_top10 = date_vs_article.head(10)
+print(date_vs_article)
+
+month_1 = date_vs_article[date_vs_article['month'] == '1']
+month_1_list = list(month_1['article count'])
+while True:
+    if len(month_1_list) < 31:
+        month_1_list.append(0)
+    else:
+        break
+# print(len(month_2_list))
+
+month_2 = date_vs_article[date_vs_article['month'] == '2']
+month_2_list = list(month_2['article count'])
+while True:
+    if len(month_2_list) < 31:
+        month_2_list.append(0)
+    else:
+        break
+# print(len(month_2_list))
+
+month_3 = date_vs_article[date_vs_article['month'] == '3']
+month_3_list = list(month_3['article count'])
+while True:
+    if len(month_3_list) < 31:
+        month_3_list.append(0)
+    else:
+        break
+# print(len(month_3_list))
+
+month_4 = date_vs_article[date_vs_article['month'] == '4']
+month_4_list = list(month_4['article count'])
+while True:
+    if len(month_4_list) < 31:
+        month_4_list.append(0)
+    else:
+        break
+# print(len(month_4_list))
+
+month_5 = date_vs_article[date_vs_article['month'] == '5']
+month_5_list = list(month_5['article count'])
+while True:
+    if len(month_5_list) < 31:
+        month_5_list.append(0)
+    else:
+        break
+# print(len(month_5_list))
+
+
+# heatmap_data = date_vs_article.pivot('month','day','article count')
+
+# sns.heatmap(date_vs_article)
+
+list_2d = [month_1_list]
+list_2d = [month_1_list, month_2_list, month_3_list, month_4_list, month_5_list]
+# print(list_2d)
+sns.heatmap(list_2d, xticklabels=1, yticklabels=1, cmap='coolwarm')
