@@ -267,11 +267,13 @@ plt.rcParams["font.family"] = 'Arial Unicode MS'
 plt.show()
 # %%
 
-#### 個日文章數 ####
+#### 1至5月文章數的熱力圖表 ####
 
 import seaborn as sns
 import pandas as pd
 import os
+import matplotlib.pyplot as plt
+import numpy as np
 
 # 讀取raw data
 current_path = os.getcwd()
@@ -298,7 +300,7 @@ while True:
         month_1_list.append(0)
     else:
         break
-# print(len(month_2_list))
+print(len(month_1_list))
 
 month_2 = date_vs_article[date_vs_article['month'] == '2']
 month_2_list = list(month_2['article count'])
@@ -328,6 +330,7 @@ while True:
 # print(len(month_4_list))
 
 month_5 = date_vs_article[date_vs_article['month'] == '5']
+# print(month_5)
 month_5_list = list(month_5['article count'])
 while True:
     if len(month_5_list) < 31:
@@ -337,11 +340,23 @@ while True:
 # print(len(month_5_list))
 
 
-# heatmap_data = date_vs_article.pivot('month','day','article count')
-
-# sns.heatmap(date_vs_article)
-
-list_2d = [month_1_list]
-list_2d = [month_1_list, month_2_list, month_3_list, month_4_list, month_5_list]
+list_total_article = [month_1_list, month_2_list, month_3_list, month_4_list, month_5_list]
 # print(list_2d)
-sns.heatmap(list_2d, xticklabels=1, yticklabels=1, cmap='coolwarm')
+plt.figure(figsize=(8,2))
+
+
+sns.heatmap(list_total_article, 
+            xticklabels=('1','2','3','4','5','6','7','8','9','10',
+                         '11','12','13','14','15','16','17','18','19','20',
+                         '21','22','23','24','25','26','27','28','29','30','31'), 
+            yticklabels=('1月','2月','3月','4月','5月'),
+            cmap='coolwarm', 
+            linewidths='0.5',
+            cbar_kws={'orientation':'horizontal'})
+
+plt.yticks(rotation=0)
+plt.rcParams["font.family"] = 'Arial Unicode MS'
+plt.show()
+# %%
+
+#
