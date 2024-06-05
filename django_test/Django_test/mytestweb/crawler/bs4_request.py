@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Apr 30 09:14:14 2024
-
-@author: USER
-"""
 
 #%%
 import requests

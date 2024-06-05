@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu May  9 11:27:07 2024
-
-@author: USER
-"""
 
 #%%
 
@@ -113,15 +107,19 @@ category_gossip_month_5_data = len(month_5_data[df['category'] == '[爆卦]'])
 category_ask_month_5_data = len(month_5_data[df['category'] == '[問卦]'])
 
 
-
 #%%
+#### 一月PTT文章類型分佈 ####
+
+import matplotlib.pyplot as plt
+import os
+
 
 plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
 
 category_type = ['新聞', '爆卦', '問卦']
 category_count = [category_news_month_1_data, category_gossip_month_1_data, category_ask_month_1_data]
 
-fig = plt.figure(figsize=(5,3))
+fig = plt.figure(figsize=(8,5))
 
 plt.xlim(-1,3)
 plt.plot(category_type, category_count, marker = 'o', linestyle = '--')
@@ -130,66 +128,17 @@ plt.xlabel('文章類別', color = 'red')
 plt.ylabel('文章數量（篇）', color = 'red')
 plt.tick_params(axis='x', width=5, rotation=45)
 plt.title('PTT八卦版 一月文章類別分布', color = 'red')
-
 plt.show()
 
-#%%
+# 儲存路徑為static資料夾
+static_dir = os.path.join('..', 'static/')
+plt.savefig(static_dir+'ptt_jan_category_type.png')
 
-#### 月份動態圖 ####
+#%%
+#### 一月每日分布 ####
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-
-
-category_type = ['新聞', '爆卦', '問卦']
-category_count_1 = [category_news_month_1_data, category_gossip_month_1_data, category_ask_month_1_data]
-category_count_2 = [category_news_month_2_data, category_gossip_month_2_data, category_ask_month_2_data]
-category_count_3 = [category_news_month_3_data, category_gossip_month_3_data, category_ask_month_3_data]
-category_count_4 = [category_news_month_4_data, category_gossip_month_4_data, category_ask_month_4_data]
-category_count_5 = [category_news_month_5_data, category_gossip_month_5_data, category_ask_month_5_data]
-category_count_list = [category_count_1, category_count_2, category_count_3, category_count_4, category_count_5]
-# print(category_count_list)
-
-# 創建畫布(寬8, 高5)
-fig, ax = plt.subplots(figsize=(8,5))
-
-
-def update(num):
-    
-    ax.clear()
-    ax.bar(category_type, category_count_list[num % len(category_count_list)])
-    ax.set_title('PTT八卦版 2024-1月到5月文章類別分布', color = 'red')
-
-    ax.set_xlabel('文章類別', color = 'red')
-    ax.set_ylabel('文章數量（篇）', color = 'red')
-    ax.set_title(f'PTT八卦版 2024-{num+1}月文章類別分布', color = 'red')
-
-    # 設定 x 軸的文字刻度間距為 5 個單位
-    ax.tick_params(axis='x', width=5, rotation=0)
-    # 設定 x 軸的刻度間距為 1
-    ax.set_xlim(-1,3)
-    # 設定 y 軸的範圍
-    ax.set_ylim(0, 40000)
-    # 設定 y 軸的刻度間距為 5000
-    ax.set_yticks(np.arange(0, 40000, 5000))
-
-ani = animation.FuncAnimation(fig, update, frames=range(5), repeat=True)
-plt.rcParams["font.family"] = 'Arial Unicode MS'
-plt.show()
-
-ani.save('movechart.gif', writer='imagemagick', fps=1/1)
-
-
-
-#%%
-
-#### 日份動態圖 ####
-
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-
-category_type = ['新聞', '爆卦', '問卦']
-
 
 
 
@@ -198,6 +147,7 @@ fig, ax = plt.subplots(figsize=(8,5))
 
 
 def update(num):
+    category_type = ['新聞', '爆卦', '問卦']
     
     ax.clear()
     
@@ -216,15 +166,67 @@ def update(num):
     ax.set_ylim(0, 35000)
     # 設定 y 軸的刻度間距為 5000
     ax.set_yticks(np.arange(0, 35000, 5000))
-
+    plt.rcParams["font.family"] = 'Arial Unicode MS'
+    plt.show()
+    
 ani = animation.FuncAnimation(fig, update, frames=range(31), repeat=True)
-plt.rcParams["font.family"] = 'Arial Unicode MS'
-plt.show()
 
-ani.save('movechart_month_1_category.gif', writer='imagemagick', fps=1/0.2)
+# 儲存路徑為static資料夾
+static_dir = os.path.join('..', 'static/')
+ani.save(static_dir+'ppt_jan_days_category_type.gif', writer='imagemagick', fps=1/0.2)
+
 
 #%%
+####  一至五月PTT文章類型分佈 ####
+    
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import numpy as np
 
+# 創建畫布(寬8, 高5)
+fig, ax = plt.subplots(figsize=(8,5))
+
+
+def update(num):
+    
+    category_type = ['新聞', '爆卦', '問卦']
+    category_count_1 = [category_news_month_1_data, category_gossip_month_1_data, category_ask_month_1_data]
+    category_count_2 = [category_news_month_2_data, category_gossip_month_2_data, category_ask_month_2_data]
+    category_count_3 = [category_news_month_3_data, category_gossip_month_3_data, category_ask_month_3_data]
+    category_count_4 = [category_news_month_4_data, category_gossip_month_4_data, category_ask_month_4_data]
+    category_count_5 = [category_news_month_5_data, category_gossip_month_5_data, category_ask_month_5_data]
+    category_count_list = [category_count_1, category_count_2, category_count_3, category_count_4, category_count_5]
+    # print(category_count_list)
+
+
+    ax.clear()
+    ax.bar(category_type, category_count_list[num % len(category_count_list)])
+    ax.set_title('PTT八卦版 2024-1月到5月文章類別分布', color = 'red')
+
+    ax.set_xlabel('文章類別', color = 'red')
+    ax.set_ylabel('文章數量（篇）', color = 'red')
+    ax.set_title(f'PTT八卦版 2024-{num+1}月文章類別分布', color = 'red')
+
+    # 設定 x 軸的文字刻度間距為 5 個單位
+    ax.tick_params(axis='x', width=5, rotation=0)
+    # 設定 x 軸的刻度間距為 1
+    ax.set_xlim(-1,3)
+    # 設定 y 軸的範圍
+    ax.set_ylim(0, 40000)
+    # 設定 y 軸的刻度間距為 5000
+    ax.set_yticks(np.arange(0, 40000, 5000))
+    plt.rcParams["font.family"] = 'Arial Unicode MS'
+    plt.show()
+
+ani = animation.FuncAnimation(fig, update, frames=range(5), repeat=True)
+
+# 儲存路徑為static資料夾
+static_dir = os.path.join('..', 'static/')
+ani.save(static_dir+'ppt_jan_may_category_type.gif', writer='imagemagick', fps=1/1)
+
+
+
+#%%
 #### 熱門關鍵字 ####
 
 import pandas as pd
@@ -239,15 +241,13 @@ with (open(current_path+'/PTT_words_count.csv', 'r', encoding='utf-8')) as f:
     print(list(PTT_words_count['Counts']))
     
 
-
-
 # 排序欄位Counts從大到小
 sort_counts = PTT_words_count.sort_values(by='Counts', ascending=False)
 print(sort_counts)
 
 list_words = (list(sort_counts['Word'][0:10]))
 list_counts = (list(sort_counts['Counts'][0:10]))
-
+plt.figure(figsize=(9,5))
 
 # print(labels)
 separeted = [0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1]
@@ -261,12 +261,16 @@ plt.pie(list_counts,                           # 數值
 
 
 plt.axis('equal')                                          # 使圓餅圖比例相等
-plt.title("Top 10 keyword in PTT", {"fontsize" : 18})  # 設定標題及其文字大小
+plt.title("Top 10 keyword in PTT", {"fontsize" : 20})  # 設定標題及其文字大小
 plt.legend(loc = "best")                                   # 設定圖例及其位置為最佳
 plt.rcParams["font.family"] = 'Arial Unicode MS'
 plt.show()
-# %%
 
+# 儲存路徑為static資料夾
+static_dir = os.path.join('..', 'static/')
+plt.savefig(static_dir+'ptt_gossping_keyword_search.png')
+
+# %%
 #### 1至5月文章數的熱力圖表 ####
 
 import seaborn as sns
@@ -357,6 +361,10 @@ sns.heatmap(list_total_article,
 plt.yticks(rotation=0)
 plt.rcParams["font.family"] = 'Arial Unicode MS'
 plt.show()
+
+# 儲存路徑為static資料夾
+static_dir = os.path.join('..', 'static/')
+plt.savefig(static_dir+'ptt_gossping_heatmap.png')
 # %%
 
 #
